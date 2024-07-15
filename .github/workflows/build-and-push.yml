@@ -1,1 +1,25 @@
-'build-and-push.yml'
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main  # 또는 다른 브랜치 이름
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest  # GitHub Actions에서 실행할 환경을 지정합니다.
+
+    steps:
+      - name: Checkout repository  # GitHub 리포지토리를 체크아웃합니다.
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub  # Docker Hub에 로그인합니다.
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}  # GitHub Secrets에서 Docker Hub 사용자 이름을 가져옵니다.
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}  # GitHub Secrets에서 Docker Hub 액세스 토큰을 가져옵니다.
+        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - name: Build and push Docker image  # Docker 이미지를 빌드하고 Docker Hub에 푸시합니다.
+        run: |
+          docker build -t gyusangyu/docker_TSET .  # 이미지를 빌드합니다. gyusangyu/docker_TSET는 여러분의 Docker Hub 저장소 이름입니다.
+          docker push gyusangyu/docker_TSET  # 이미지를 Docker Hub에 푸시합니다.
